@@ -1,0 +1,10 @@
+coop/
+*.cfg
+!autoexec.cfg
+!autoexec/*.cfg
+!scripts/*.cfg
+*.vdf
+*.txt
+*.ekv
+*.scr
+*.rc
