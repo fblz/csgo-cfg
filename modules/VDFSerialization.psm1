@@ -41,40 +41,38 @@ Function ConvertFrom-VDF {
     $element = $null
 
     #Magic PowerShell Switch Enumrates Arrays
-    #foreach ($line in $InputObject) {
-        switch -Regex ($InputObject) {
-            #Case: ValueKey
-            '^\t*"(\S+)"\t\t"(.+)"$' {
-                Add-Member -InputObject $element -MemberType NoteProperty -Name $Matches[1] -Value $Matches[2]
-                continue
-            }
-            #Case: ParentKey
-            '^\t*"(\S+)"$' { 
-                $element = New-Object -TypeName PSObject
-                Add-Member -InputObject $parent -MemberType NoteProperty -Name $Matches[1] -Value $element
-                continue
-            }
-            #Case: Opening ParentKey Scope
-            '^\t*{$' {
-                $parent = $element
-                $chain.Add($depth, $element)
-                $depth++
-                continue
-            }
-            #Case: Closing ParentKey Scope
-            '^\t*}$' {
-                $depth--
-                $parent = $chain.($depth - 1)
-                $element = $parent
-                $chain.Remove($depth)
-                continue
-            }
-            #Case: Comments or unsupported lines
-            Default {
-                Write-Debug "Ignored line: $_"
-                continue
-            }
-        #}
+    switch -Regex ($InputObject) {
+        #Case: ValueKey
+        '^\t*"(\S+)"\t\t"(.+)"$' {
+            Add-Member -InputObject $element -MemberType NoteProperty -Name $Matches[1] -Value $Matches[2]
+            continue
+        }
+        #Case: ParentKey
+        '^\t*"(\S+)"$' { 
+            $element = New-Object -TypeName PSObject
+            Add-Member -InputObject $parent -MemberType NoteProperty -Name $Matches[1] -Value $element
+            continue
+        }
+        #Case: Opening ParentKey Scope
+        '^\t*{$' {
+            $parent = $element
+            $chain.Add($depth, $element)
+            $depth++
+            continue
+        }
+        #Case: Closing ParentKey Scope
+        '^\t*}$' {
+            $depth--
+            $parent = $chain.($depth - 1)
+            $element = $parent
+            $chain.Remove($depth)
+            continue
+        }
+        #Case: Comments or unsupported lines
+        Default {
+            Write-Debug "Ignored line: $_"
+            continue
+        }
     }
 
     return $root
