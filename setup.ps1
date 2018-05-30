@@ -1,6 +1,6 @@
 Import-Module .\modules\VDFSerialization.psm1
 
-$LaunchOptions = "-novid -nojoy -nod3d9ex -high -language textmod"
+$LaunchOptions = "-novid -nojoy -high -language textmod -refresh 144"
 $SimpleRadar = "http://simpleradar.com/downloads/fullpackV2.zip"
 
 $SteamPath = (Get-Item HKCU:\Software\Valve\Steam\).GetValue("SteamPath").Replace("/","\")
