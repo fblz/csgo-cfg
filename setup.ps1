@@ -26,10 +26,9 @@ $LibraryFolders = Join-Path -Path $SteamPath -ChildPath "steamapps\libraryfolder
 $Librarys = ConvertFrom-VDF -InputObject (Get-Content $LibraryFolders)
 
 #Search the CSGO Folder
-#Who has more than 20 Steam Libraries?
 $csgo = [string]::Empty
 
-for ($i = 1; $i -le 20; $i++) {
+for ($i = 1; $true; $i++) {
   if ($Librarys.LibraryFolders."$i" -eq $null) {
     break
   }
