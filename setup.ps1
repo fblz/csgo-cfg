@@ -59,5 +59,9 @@ Remove-Item -Path "$Overviews\de_cache_radar_spectate.dds" -ErrorAction Silently
 # Copy-Item .\src\csgo_textmod.txt $Resource -Force
 
 $Cfg = Join-Path $csgo "cfg"
+
 Remove-Item -Recurse -Force -Path ("$Cfg\autoexec.cfg", "$Cfg\autoexec", "$Cfg\scripts") -ErrorAction SilentlyContinue
-Copy-Item -Recurse -Path (".\src\autoexec",".\src\scripts",".\src\autoexec.cfg") -Destination $Cfg
+
+New-Item -ItemType SymbolicLink -Name autoexec.cfg -Path $Cfg -Value .\src\autoexec.cfg
+New-Item -ItemType SymbolicLink -Name autoexec -Path $Cfg -Value .\src\autoexec
+New-Item -ItemType SymbolicLink -Name scripts -Path $Cfg -Value .\src\scripts
