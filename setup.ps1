@@ -1,6 +1,7 @@
 Import-Module .\modules\VDFSerialization.psm1
 
 $LaunchOptions = "-novid -nojoy -high -language english -refresh 144"
+$CfgFiles = "autoexec.cfg", "autoexec", "scripts"
 $SimpleRadar = "http://simpleradar.com/downloads/fullpackV2.zip"
 
 $SteamPath = Get-Item ((Get-Item HKCU:\Software\Valve\Steam\).GetValue("SteamPath").Replace("/","\"))
@@ -59,9 +60,18 @@ Remove-Item -Path "$Overviews\de_cache_radar_spectate.dds" -ErrorAction Silently
 # Copy-Item .\src\csgo_textmod.txt $Resource -Force
 
 $Cfg = Join-Path $csgo "cfg"
+$Src = Get-Item .\src
 
-Remove-Item -Recurse -Force -Path ("$Cfg\autoexec.cfg", "$Cfg\autoexec", "$Cfg\scripts") -ErrorAction SilentlyContinue
+foreach ($path in $CfgFiles) {
+  $item = Get-Item "$Cfg\$path" -ErrorAction SilentlyContinue
 
-New-Item -ItemType SymbolicLink -Name autoexec.cfg -Path $Cfg -Value .\src\autoexec.cfg
-New-Item -ItemType SymbolicLink -Name autoexec -Path $Cfg -Value .\src\autoexec
-New-Item -ItemType SymbolicLink -Name scripts -Path $Cfg -Value .\src\scripts
+  if ($null -ne $item) {
+    if (-not $item.Target) {
+      Remove-Item -Recurse $item
+    } elseif ($item.Target[0].Contains($Src.FullName)) {
+      continue
+    }
+  }
+
+  New-Item -ItemType SymbolicLink -Name $path -Path $Cfg -Value ".\src\$path" | Out-Null
+}
