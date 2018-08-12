@@ -54,8 +54,9 @@ Expand-Archive -Path "$temp\radar.zip" -DestinationPath $Overviews -Force
 Remove-Item -Path ("$temp\radar.zip", $temp, "$Overviews\read-me.txt")
 Remove-Item -Path "$Overviews\de_cache_radar_spectate.dds" -ErrorAction SilentlyContinue
 
-$Resource = Join-Path $csgo "resource"
-Copy-Item .\src\csgo_textmod.txt $Resource -Force
+# Textmod not compatible with panorama atm
+# $Resource = Join-Path $csgo "resource"
+# Copy-Item .\src\csgo_textmod.txt $Resource -Force
 
 $Cfg = Join-Path $csgo "cfg"
 Remove-Item -Recurse -Force -Path ("$Cfg\autoexec.cfg", "$Cfg\autoexec", "$Cfg\scripts") -ErrorAction SilentlyContinue
