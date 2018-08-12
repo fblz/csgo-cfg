@@ -3,16 +3,16 @@ Import-Module .\modules\VDFSerialization.psm1
 $LaunchOptions = "-novid -nojoy -high -language textmod -refresh 144"
 $SimpleRadar = "http://simpleradar.com/downloads/fullpackV2.zip"
 
-$SteamPath = (Get-Item HKCU:\Software\Valve\Steam\).GetValue("SteamPath").Replace("/","\")
-$Userdata = Join-Path -Path $SteamPath -ChildPath "userdata"
+$SteamPath = Get-Item ((Get-Item HKCU:\Software\Valve\Steam\).GetValue("SteamPath").Replace("/","\"))
+$Userdata = Get-Item (Join-Path -Path $SteamPath -ChildPath "userdata")
 
 foreach ($folder in (Get-ChildItem -Directory $Userdata)) {
   $File = Join-Path -Path $folder.FullName -ChildPath "config\localconfig.vdf"
   $Config = ConvertFrom-VDF -InputObject (Get-Content $File)
 
-  if ($Config.UserLocalConfigStore.Software.Valve.Steam.apps."730".LaunchOptions -ne $null) {
+  if ($null -ne $Config.UserLocalConfigStore.Software.Valve.Steam.apps."730".LaunchOptions) {
     $Config.UserLocalConfigStore.Software.Valve.Steam.apps."730".LaunchOptions = $LaunchOptions
-  } elseif ($Config.UserLocalConfigStore.Software.Valve.Steam.apps."730" -ne $null) {
+  } elseif ($null -ne $Config.UserLocalConfigStore.Software.Valve.Steam.apps."730") {
     Add-Member -InputObject $Config.UserLocalConfigStore.Software.Valve.Steam.apps."730" -MemberType NoteProperty -Name "LaunchOptions" -Value $LaunchOptions
   } else {
     Write-Error "Could not find CSGO in $($folder.Name) localconfig. LaunchOptions unchanged."
@@ -29,7 +29,7 @@ $Librarys = ConvertFrom-VDF -InputObject (Get-Content $LibraryFolders)
 $csgo = [string]::Empty
 
 for ($i = 1; $true; $i++) {
-  if ($Librarys.LibraryFolders."$i" -eq $null) {
+  if ($null -eq $Librarys.LibraryFolders."$i") {
     break
   }
 
