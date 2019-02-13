@@ -1,6 +1,6 @@
 Import-Module .\modules\VDFSerialization.psm1
 
-$LaunchOptions = "-novid -nojoy -high -language english -refresh 144"
+$LaunchOptions = "-novid -nojoy -high -language textmod -refresh 144"
 $CfgFiles = "autoexec.cfg", "autoexec", "scripts"
 $SimpleRadar = "http://simpleradar.com/downloads/fullpackV2.zip"
 
@@ -55,9 +55,8 @@ Expand-Archive -Path "$temp\radar.zip" -DestinationPath $Overviews -Force
 Remove-Item -Path ("$temp\radar.zip", $temp, "$Overviews\read-me.txt")
 Remove-Item -Path "$Overviews\de_cache_radar_spectate.dds" -ErrorAction SilentlyContinue
 
-# Textmod not compatible with panorama atm
-# $Resource = Join-Path $csgo "resource"
-# Copy-Item .\src\csgo_textmod.txt $Resource -Force
+$Resource = Join-Path $csgo "resource"
+Copy-Item .\src\csgo_textmod.txt $Resource -Force
 
 $Cfg = Join-Path $csgo "cfg"
 $Src = Get-Item .\src
