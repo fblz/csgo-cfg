@@ -39,7 +39,7 @@ foreach ($folder in (Get-ChildItem -Directory $Userdata)) {
       }
     }
 
-    New-Item -ItemType SymbolicLink -Name $path -Path $Cfg -Value ".\src\$path" | Out-Null
+    New-Item -ItemType SymbolicLink -Name $path -Path $Cfg -Value "$($Src.FullName)\$path" | Out-Null
   }
 }
 
