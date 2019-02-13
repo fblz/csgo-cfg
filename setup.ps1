@@ -11,16 +11,36 @@ foreach ($folder in (Get-ChildItem -Directory $Userdata)) {
   $File = Join-Path -Path $folder.FullName -ChildPath "config\localconfig.vdf"
   $Config = ConvertFrom-VDF -InputObject (Get-Content $File)
 
-  if ($null -ne $Config.UserLocalConfigStore.Software.Valve.Steam.apps."730".LaunchOptions) {
-    $Config.UserLocalConfigStore.Software.Valve.Steam.apps."730".LaunchOptions = $LaunchOptions
-  } elseif ($null -ne $Config.UserLocalConfigStore.Software.Valve.Steam.apps."730") {
-    Add-Member -InputObject $Config.UserLocalConfigStore.Software.Valve.Steam.apps."730" -MemberType NoteProperty -Name "LaunchOptions" -Value $LaunchOptions
-  } else {
-    Write-Error "Could not find CSGO in $($folder.Name) localconfig. LaunchOptions unchanged."
+  if ($null -eq $Config.UserLocalConfigStore.Software.Valve.Steam.apps."730") {
+    Write-Host "No CSGO in $($Config.UserLocalConfigStore.friends.PersonaName)s Library."
     continue
   }
 
+  Write-Host "Install LaunchOptions and Autoexec to $($Config.UserLocalConfigStore.friends.PersonaName)s Account? (Y/n)" -NoNewline
+  $userInput = Read-Host
+  if ($userInput -like "n") {
+    continue
+  }
+
+  Add-Member -InputObject $Config.UserLocalConfigStore.Software.Valve.Steam.apps."730" -MemberType NoteProperty -Name "LaunchOptions" -Value $LaunchOptions -Force
   ConvertTo-VDF -InputObject $Config | Out-File -NoNewline -Encoding utf8 -FilePath $File
+
+  $Cfg = Join-Path -Path $folder.FullName -ChildPath "730\local\cfg"
+  $Src = Get-Item .\src
+
+  foreach ($path in $CfgFiles) {
+    $item = Get-Item "$Cfg\$path" -ErrorAction SilentlyContinue
+
+    if ($null -ne $item) {
+      if (-not $item.Target) {
+        Remove-Item -Recurse $item
+      } elseif ($item.Target[0].Contains($Src.FullName)) {
+        continue
+      }
+    }
+
+    New-Item -ItemType SymbolicLink -Name $path -Path $Cfg -Value ".\src\$path" | Out-Null
+  }
 }
 
 $LibraryFolders = Join-Path -Path $SteamPath -ChildPath "steamapps\libraryfolders.vdf"
@@ -58,19 +78,4 @@ Remove-Item -Path "$Overviews\de_cache_radar_spectate.dds" -ErrorAction Silently
 $Resource = Join-Path $csgo "resource"
 Copy-Item .\src\csgo_textmod.txt $Resource -Force
 
-$Cfg = Join-Path $csgo "cfg"
-$Src = Get-Item .\src
-
-foreach ($path in $CfgFiles) {
-  $item = Get-Item "$Cfg\$path" -ErrorAction SilentlyContinue
-
-  if ($null -ne $item) {
-    if (-not $item.Target) {
-      Remove-Item -Recurse $item
-    } elseif ($item.Target[0].Contains($Src.FullName)) {
-      continue
-    }
-  }
-
-  New-Item -ItemType SymbolicLink -Name $path -Path $Cfg -Value ".\src\$path" | Out-Null
-}
+#TODO: Look for config in global directory and delete it.
