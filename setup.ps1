@@ -26,6 +26,8 @@ foreach ($folder in (Get-ChildItem -Directory $Userdata)) {
   ConvertTo-VDF -InputObject $Config | Out-File -NoNewline -Encoding utf8 -FilePath $File
 
   $Cfg = Join-Path -Path $folder.FullName -ChildPath "730\local\cfg"
+  #create empty folder structure if not present
+  New-Item -Type Directory $Cfg -Force | Out-Null
   $Src = Get-Item .\src
 
   foreach ($path in $CfgFiles) {
