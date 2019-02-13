@@ -43,6 +43,12 @@ foreach ($folder in (Get-ChildItem -Directory $Userdata)) {
   }
 }
 
+Write-Host "Install radar and textmod to global directory? (y/N)" -NoNewline
+$userInput = Read-Host
+if ($userInput -notlike "y") {
+  return
+}
+
 $LibraryFolders = Join-Path -Path $SteamPath -ChildPath "steamapps\libraryfolders.vdf"
 $Librarys = ConvertFrom-VDF -InputObject (Get-Content $LibraryFolders)
 
