@@ -34,6 +34,7 @@ Function ConvertFrom-VDF {
         $InputObject
     )
 
+    Set-StrictMode -Version Latest
     $chain = New-Object -TypeName System.Collections.Stack
     $chain.Push((New-Object -TypeName PSObject))
     $element = $null
@@ -109,6 +110,7 @@ Function ConvertTo-VDF
         [int]
         $Depth = 0
     )
+    Set-StrictMode -Version Latest
     $output = [string]::Empty
     
     foreach ( $property in ($InputObject.psobject.Properties) ) {
