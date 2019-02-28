@@ -34,38 +34,31 @@ Function ConvertFrom-VDF {
         $InputObject
     )
 
-    $root = New-Object -TypeName PSObject
-    $chain = [ordered]@{}
-    $depth = 0
-    $parent = $root
+    $chain = New-Object -TypeName System.Collections.Stack
+    $chain.Push((New-Object -TypeName PSObject))
     $element = $null
 
     #Magic PowerShell Switch Enumrates Arrays
     switch -Regex ($InputObject) {
         #Case: ValueKey
         '^\t*"(\S+)"\t\t"(.+)"$' {
-            Add-Member -InputObject $element -MemberType NoteProperty -Name $Matches[1] -Value $Matches[2]
+            Add-Member -InputObject $chain.Peek() -MemberType NoteProperty -Name $Matches[1] -Value $Matches[2]
             continue
         }
         #Case: ParentKey
         '^\t*"(\S+)"$' { 
             $element = New-Object -TypeName PSObject
-            Add-Member -InputObject $parent -MemberType NoteProperty -Name $Matches[1] -Value $element
+            Add-Member -InputObject $chain.Peek() -MemberType NoteProperty -Name $Matches[1] -Value $element
             continue
         }
         #Case: Opening ParentKey Scope
         '^\t*{$' {
-            $parent = $element
-            $chain.Add($depth, $element)
-            $depth++
+            $chain.Push($element)
             continue
         }
         #Case: Closing ParentKey Scope
         '^\t*}$' {
-            $depth--
-            $parent = $chain.($depth - 1)
-            $element = $parent
-            $chain.Remove($depth)
+            $element = $chain.Pop()
             continue
         }
         #Case: Comments or unsupported lines
@@ -75,7 +68,7 @@ Function ConvertFrom-VDF {
         }
     }
 
-    return $root
+    return $chain.Pop()
 }
 
 Function ConvertTo-VDF
