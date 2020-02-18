@@ -1,7 +1,6 @@
 Import-Module .\modules\VDFSerialization.psm1
 
 $LaunchOptions = "-novid -nojoy -high -language textmod -refresh 144"
-$SimpleRadar = "http://simpleradar.com/downloads/fullpackV2.zip"
 $CfgFiles = "autoexec.cfg", "autoexec"
 
 $SteamPath = Get-Item ((Get-Item HKCU:\Software\Valve\Steam\).GetValue("SteamPath").Replace("/","\"))
@@ -45,45 +44,27 @@ foreach ($folder in (Get-ChildItem -Directory $Userdata)) {
   }
 }
 
-Write-Host "Install radar and textmod to global directory? (y/N)" -NoNewline
-$userInput = Read-Host
-if ($userInput -notlike "y") {
-  return
-}
+# $LibraryFolders = Join-Path -Path $SteamPath -ChildPath "steamapps\libraryfolders.vdf"
+# $Librarys = ConvertFrom-VDF -InputObject (Get-Content $LibraryFolders)
 
-$LibraryFolders = Join-Path -Path $SteamPath -ChildPath "steamapps\libraryfolders.vdf"
-$Librarys = ConvertFrom-VDF -InputObject (Get-Content $LibraryFolders)
+# #Search the CSGO Folder
+# $csgo = [string]::Empty
 
-#Search the CSGO Folder
-$csgo = [string]::Empty
+# for ($i = 1; $true; $i++) {
+#   if ($null -eq $Librarys.LibraryFolders."$i") {
+#     break
+#   }
 
-for ($i = 1; $true; $i++) {
-  if ($null -eq $Librarys.LibraryFolders."$i") {
-    break
-  }
+#   $tmpPath = Join-Path -Path $Librarys.LibraryFolders."$i".Replace("\\","\") -ChildPath "steamapps\common\Counter-Strike Global Offensive\csgo"
 
-  $tmpPath = Join-Path -Path $Librarys.LibraryFolders."$i".Replace("\\","\") -ChildPath "steamapps\common\Counter-Strike Global Offensive\csgo"
+#   if (Test-Path $tmpPath) {
+#     $csgo = $tmpPath
+#     break
+#   }
+# }
 
-  if (Test-Path $tmpPath) {
-    $csgo = $tmpPath
-    break
-  }
-}
-
-if ($csgo -eq [string]::Empty) {
-  Write-Error "Could not find csgo, is it installed?" -ErrorAction Stop
-}
-
-$temp = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath "csgo-cfg-installer"
-mkdir $temp | Out-Null
-$Overviews = Join-Path -Path $csgo -ChildPath "resource\overviews"
-
-Invoke-WebRequest -Uri $SimpleRadar -OutFile "$temp\radar.zip"
-Expand-Archive -Path "$temp\radar.zip" -DestinationPath $Overviews -Force
-Remove-Item -Path ("$temp\radar.zip", $temp, "$Overviews\read-me.txt")
-Remove-Item -Path "$Overviews\de_cache_radar_spectate.dds" -ErrorAction SilentlyContinue
-
-$Resource = Join-Path $csgo "resource"
-Copy-Item .\src\csgo_textmod.txt $Resource -Force
+# if ($csgo -eq [string]::Empty) {
+#   Write-Error "Could not find csgo, is it installed?" -ErrorAction Stop
+# }
 
 #TODO: Look for config in global directory and delete it.
