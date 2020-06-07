@@ -1,7 +1,7 @@
 Import-Module .\modules\VDFSerialization.psm1
 
 $LaunchOptions = "-novid -nojoy -high -language textmod -refresh 144"
-$CfgFiles = "autoexec.cfg", "autoexec"
+$CfgFiles = "autoexec.cfg", "autoexec", "training.cfg"
 
 $SteamPath = Get-Item ((Get-Item HKCU:\Software\Valve\Steam\).GetValue("SteamPath").Replace("/","\"))
 $Userdata = Get-Item (Join-Path -Path $SteamPath -ChildPath "userdata")
