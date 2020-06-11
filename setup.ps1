@@ -1,3 +1,8 @@
+filter SePriv {(-split $_)[0]}
+if (-not (whoami /priv /FO TABLE /NH | SePriv).Contains("SeCreateSymbolicLinkPrivilege")) {
+  Write-Error "This script uses symbolic links which you cannot create. Either run as Administrator or enable developer mode."
+}
+
 Import-Module .\modules\VDFSerialization.psm1
 
 $LaunchOptions = "-novid -nojoy -high -language textmod -refresh 144"
