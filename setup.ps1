@@ -49,27 +49,4 @@ foreach ($folder in (Get-ChildItem -Directory $Userdata)) {
   }
 }
 
-# $LibraryFolders = Join-Path -Path $SteamPath -ChildPath "steamapps\libraryfolders.vdf"
-# $Librarys = ConvertFrom-VDF -InputObject (Get-Content $LibraryFolders)
 
-# #Search the CSGO Folder
-# $csgo = [string]::Empty
-
-# for ($i = 1; $true; $i++) {
-#   if ($null -eq $Librarys.LibraryFolders."$i") {
-#     break
-#   }
-
-#   $tmpPath = Join-Path -Path $Librarys.LibraryFolders."$i".Replace("\\","\") -ChildPath "steamapps\common\Counter-Strike Global Offensive\csgo"
-
-#   if (Test-Path $tmpPath) {
-#     $csgo = $tmpPath
-#     break
-#   }
-# }
-
-# if ($csgo -eq [string]::Empty) {
-#   Write-Error "Could not find csgo, is it installed?" -ErrorAction Stop
-# }
-
-#TODO: Look for config in global directory and delete it.
