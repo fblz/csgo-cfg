@@ -6,7 +6,7 @@ if (-not (whoami /priv /FO TABLE /NH | SePriv).Contains("SeCreateSymbolicLinkPri
 Import-Module .\modules\VDFSerialization.psm1
 
 $LaunchOptions = "-novid -nojoy -high -language textmod -refresh 144"
-$CfgFiles = "autoexec.cfg", "autoexec", "training.cfg"
+$CfgFiles = Get-ChildItem .\src\ | Select-Object -ExpandProperty Name
 
 $SteamPath = Get-Item ((Get-Item HKCU:\Software\Valve\Steam\).GetValue("SteamPath").Replace("/","\"))
 $Userdata = Get-Item (Join-Path -Path $SteamPath -ChildPath "userdata")
