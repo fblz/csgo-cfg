@@ -1,3 +1,6 @@
+Set-StrictMode -Version latest
+$ErrorActionPreference = 'Stop'
+
 filter SePriv {(-split $_)[0]}
 if (-not (whoami /priv /FO TABLE /NH | SePriv).Contains("SeCreateSymbolicLinkPrivilege")) {
   Write-Error "This script uses symbolic links which you cannot create. Either run as Administrator or enable developer mode."
@@ -29,24 +32,22 @@ foreach ($folder in (Get-ChildItem -Directory $Userdata)) {
   Add-Member -InputObject $Config.UserLocalConfigStore.Software.Valve.Steam.apps."730" -MemberType NoteProperty -Name "LaunchOptions" -Value $LaunchOptions -Force
   ConvertTo-VDF -InputObject $Config | Out-File -NoNewline -Encoding utf8 -FilePath $File
 
-  $Cfg = Join-Path -Path $folder.FullName -ChildPath "730\local\cfg"
+  $CfgDirectory = Join-Path -Path $folder.FullName -ChildPath "730\local\cfg"
   #create empty folder structure if not present
-  New-Item -Type Directory $Cfg -Force | Out-Null
+  New-Item -Type Directory $CfgDirectory -Force | Out-Null
   $Src = Get-Item .\src
 
-  foreach ($path in $CfgFiles) {
-    $item = Get-Item "$Cfg\$path" -ErrorAction SilentlyContinue
-
-    if ($null -ne $item) {
-      if (-not $item.Target) {
-        Remove-Item -Recurse $item
-      } elseif ($item.Target[0].Contains($Src.FullName)) {
-        continue
-      }
+  foreach ($item in Get-ChildItem $CfgDirectory) {
+    if ($item.Target)
+    {
+      Remove-Item $item
     }
+    elseif ($CfgFiles.Contains($item.Name)) {
+      Remove-Item -Recurse $item
+    }
+  }
 
-    New-Item -ItemType SymbolicLink -Name $path -Path $Cfg -Value "$($Src.FullName)\$path" | Out-Null
+  foreach ($name in $CfgFiles) {
+    New-Item -ItemType SymbolicLink -Name $name -Path $CfgDirectory -Value "$($Src.FullName)\$name" | Out-Null
   }
 }
-
-
